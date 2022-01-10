@@ -4,10 +4,21 @@
 # # pip install gtts
 # # pip install playsound
 #
+import random
 import speech_recognition as sr
 import pywhatkit
 from gtts import gTTS
 from playsound import playsound
+
+
+
+# try:
+#     said = sr.recognize_google(audio)
+#     print(f"You said: {said}")
+# except Exception as e:
+#     print(f"I think you are at very noisy place,\nThis is the error in computer languge: {str(e)}")
+
+r2_sounds = ["./sounds/Beeping_and_whistling.mp3", "./sounds/R2_taking_the_comlink.mp3", "./sounds/R2_taking_to_himself.mp3"]
 
 
 def speech(text):
@@ -15,50 +26,44 @@ def speech(text):
     language = "en"
     output = gTTS(text=text, lang=language, slow=False)
 
+    playsound(random.choice(r2_sounds))
     output.save("./sounds/output.mp3")
-    playsound("./sounds/output.mp3")
+    # playsound("./sounds/output.mp3")
 
 
 def get_audio():
-    recorder = sr.Recognizer()
-    with sr.Microphone() as source:
+    while True:
+        recorder = sr.Recognizer()
+        with sr.Microphone() as source:
 
-        for index, name in enumerate(sr.Microphone.list_microphone_names()):
-            print("Microphone with name \"{1}\" found for `Microphone(device_index={0})`".format(index, name))
-        speech("How may I help you?") # changed from "say something"
-        playsound("./sounds/activate.wav")
-        sr.pause_threshold = 1
-        sr.energy_threshold = 6
-        audio = recorder.listen(source)
+            # sr.pause_threshold = 1
+            # sr.energy_threshold = 6
+            audio = recorder.listen(source)
 
-    speech_text = recorder.recognize_google(audio)
-    print(f"You said: {speech_text}")
+
+        speech_text = recorder.recognize_google(audio)
+        print(speech_text)
+
+        if "R2-D2" in speech_text:
+            speech("\tHow may I help you?") # changed from "say something"
+            playsound("./sounds/activate.wav")
+        else:
+            break
+
     return speech_text
 
 
 text = get_audio()
 
+playsound(random.choice(r2_sounds))
 if "youtube" in text.lower():
-    speech("Okay, i will bring that up on youtube for you.")
+    speech("\tOkay, i will bring that up on youtube for you.")
     pywhatkit.playonyt(text)
 elif "joke" in text.lower():
-    speech("Knock knock, who's there? Boo. Boo who? Don't cry, i was just telling a joke")
+    speech("\tKnock knock, who's there? Boo. Boo who? Don't cry, i was just telling a joke")
 elif "You are welcome" in text.lower():
-    speech("Thank you for creating me Saltee_Killer")
+    speech("\tThank you for creating me Saltee_Killer")
 else:
     pywhatkit.search(text)
 
-
-# r = sr.Recognizer()
-# keyword = "hello"
-# with sr.Microphone() as source:
-#     print("Speak:")
-#     audio = r.listen(source)
-#
-# try:
-#     if  r.recognize_google(audio) == keyword:
-#         print("it worked")
-# except sr.UnknownValueError:
-#     print("Could not understand audio")
-# except sr.RequestError as e:
-#     print("Could not request results; {0}".format(e))
+# Download the R2-D2 sounds here: https://www.soundboard.com/sb/r2d2_r2_d2_sounds
